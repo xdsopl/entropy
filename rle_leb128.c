@@ -9,6 +9,43 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
+int putrle(int byte) {
+	static int prev = -1, count = -1;
+	if (byte < 0) {
+		if (count < 0)
+			return 0;
+		else
+			return putleb128(count);
+	}
+	if (byte == 0 || byte == 255) {
+		if (prev == byte) {
+			++count;
+		} else if (count < 0) {
+			if (putbyte(byte))
+				return -1;
+			count = 0;
+			prev = byte;
+		} else {
+			if (putleb128(count))
+				return -1;
+			if (putbyte(byte))
+				return -1;
+			count = 0;
+			prev = byte;
+		}
+	} else {
+		if (count >= 0) {
+			if (putleb128(count))
+				return -1;
+			count = -1;
+			prev = -1;
+		}
+		if (putbyte(byte))
+			return -1;
+	}
+	return 0;
+}
+
 int main(int argc, char **argv) {
 	if (argc != 2)
 		return 1;
@@ -20,39 +57,16 @@ int main(int argc, char **argv) {
 	putleb128(bytes);
 	if (*argv[1] == 'e') {
 		fprintf(stderr, "%s: run length encoding %d bytes\n", argv[0], bytes);
-		for (int j = bytes, last = -1, count = -1; j; --j) {
-			int byte = getbyte();
-			if (byte == 0 || byte == 255) {
-				if (last == byte) {
-					++count;
-				} else if (count < 0) {
-					putbyte(byte);
-					count = 0;
-					last = byte;
-				} else {
-					putleb128(count);
-					putbyte(byte);
-					count = 0;
-					last = byte;
-				}
-				if (j == 1)
-					putleb128(count);
-			} else {
-				if (count >= 0) {
-					putleb128(count);
-					count = -1;
-					last = -1;
-				}
-				putbyte(byte);
-			}
-		}
+		while (bytes--)
+			putrle(getbyte());
+		putrle(-1); // flush
 	} else {
 		fprintf(stderr, "%s: run length decoding %d bytes\n", argv[0], bytes);
-		for (int j = bytes; j; --j) {
+		while (bytes--) {
 			int byte = getbyte();
 			putbyte(byte);
 			if (byte == 0 || byte == 255)
-				for (int i = getleb128(); i; --i, --j)
+				for (int i = getleb128(); i; --i, --bytes)
 					putbyte(byte);
 		}
 	}
