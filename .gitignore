@@ -3,6 +3,6 @@ sine
 fixed
 copy
 rle_leb128
-rle_zero
+rle_zeros
 rle_switch
 .*.swp

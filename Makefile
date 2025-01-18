@@ -1,6 +1,6 @@
 CFLAGS = -std=c99 -W -Wall -Ofast
 # CFLAGS += -g -fsanitize=address
-CODERS = copy rle_leb128 rle_zero rle_switch
+CODERS = copy rle_leb128 rle_zeros rle_switch
 
 test: fixed sine $(CODERS)
 	$(foreach coder,$(CODERS),./fixed g 1234 0.99 | ./$(coder) e | ./$(coder) d | ./fixed v 1234 0.99;)

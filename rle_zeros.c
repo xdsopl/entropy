@@ -1,5 +1,5 @@
 /*
-Variable length integer based run length encoding of mostly zero bits
+Variable length integer based run length encoding of mostly zeros
 
 Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 */
