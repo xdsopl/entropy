@@ -3,4 +3,5 @@ sine
 fixed
 copy
 rle_leb128
+rle_zero
 .*.swp
