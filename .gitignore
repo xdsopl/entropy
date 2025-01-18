@@ -2,5 +2,5 @@ sma
 sine
 fixed
 copy
-rle
+rle_leb128
 .*.swp
