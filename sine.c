@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "%s: generating %d bytes with %d periods\n", argv[0], bytes, periods);
 		putleb128(bytes);
 		for (int j = 0; j < bytes; ++j) {
-			unsigned value = 4294967295 * 0.5 * (1.0 + sin(6.2832 * periods * j / bytes));
+			unsigned value = 4294967295 * 0.5 * (1.0 - cos(6.2832 * periods * j / bytes));
 			int byte = 0;
 			for (int i = 0; i < 8; ++i) {
 				int bit = xorshift32() <= value;
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 		if (getleb128() != bytes)
 			return 1;
 		for (int j = 0; j < bytes; ++j) {
-			unsigned value = 4294967295 * 0.5 * (1.0 + sin(6.2832 * periods * j / bytes));
+			unsigned value = 4294967295 * 0.5 * (1.0 - cos(6.2832 * periods * j / bytes));
 			int byte = 0;
 			for (int i = 0; i < 8; ++i) {
 				int bit = xorshift32() <= value;
