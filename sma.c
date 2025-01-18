@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 	if (len <= 0 || len >= 1024)
 		return 1;
 	double factor = 1.0 / (8 * len);
-	for (int j = getleb128(); j; --j)
+	for (int bytes = getleb128(); bytes; --bytes)
 		printf("%f\n", factor * sma(popcnt(getbyte()), len));
 	fprintf(stderr, "%s: read %d bytes\n", argv[0], read_bytes);
 	return 0;

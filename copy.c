@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 		return 1;
 	fprintf(stderr, "%s: copying %d bytes\n", argv[0], bytes);
 	putleb128(bytes);
-	for (int j = bytes; j; --j)
+	while (bytes--)
 		putbyte(getbyte());
 	fprintf(stderr, "%s: read %d and wrote %d bytes\n", argv[0], read_bytes, wrote_bytes);
 	return 0;

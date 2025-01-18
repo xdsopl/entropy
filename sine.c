@@ -10,14 +10,6 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
-unsigned xorshift32() {
-	static unsigned y = 2463534242;
-	y ^= y << 13;
-	y ^= y >> 17;
-	y ^= y << 5;
-	return y;
-}
-
 int main(int argc, char **argv) {
 	if (argc != 4)
 		return 1;

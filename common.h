@@ -6,6 +6,14 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 
 #pragma once
 
+unsigned xorshift32() {
+	static unsigned y = 2463534242;
+	y ^= y << 13;
+	y ^= y >> 17;
+	y ^= y << 5;
+	return y;
+}
+
 static int read_bytes;
 static int wrote_bytes;
 

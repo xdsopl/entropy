@@ -9,14 +9,6 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
-unsigned xorshift32() {
-	static unsigned y = 2463534242;
-	y ^= y << 13;
-	y ^= y >> 17;
-	y ^= y << 5;
-	return y;
-}
-
 int main(int argc, char **argv) {
 	if (argc != 4)
 		return 1;
@@ -32,7 +24,7 @@ int main(int argc, char **argv) {
 	if (*argv[1] == 'g') {
 		fprintf(stderr, "%s: generating %d bytes with probability %f\n", argv[0], bytes, prob);
 		putleb128(bytes);
-		for (int j = 0; j < bytes; ++j) {
+		while (bytes--) {
 			int byte = 0;
 			for (int i = 0; i < 8; ++i) {
 				int bit = xorshift32() <= value;
@@ -45,7 +37,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "%s: verifying %d bytes with probability %f\n", argv[0], bytes, prob);
 		if (getleb128() != bytes)
 			return 1;
-		for (int j = 0; j < bytes; ++j) {
+		while (bytes--) {
 			int byte = 0;
 			for (int i = 0; i < 8; ++i) {
 				int bit = xorshift32() <= value;
