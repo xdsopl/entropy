@@ -9,38 +9,38 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
-int putval(int val) {
-	static int order;
-	while (val >= 1 << order) {
+int putval(int val, int bit) {
+	static int order[2];
+	while (val >= 1 << order[bit]) {
 		if (putbit(0))
 			return -1;
-		val -= 1 << order;
-		order += 1;
+		val -= 1 << order[bit];
+		order[bit] += 1;
 	}
 	if (putbit(1))
 		return -1;
-	if (write_bits(val, order))
+	if (write_bits(val, order[bit]))
 		return -1;
-	order -= 1;
-	if (order < 0)
-		order = 0;
+	order[bit] -= 1;
+	if (order[bit] < 0)
+		order[bit] = 0;
 	return 0;
 }
 
-int getval() {
-	static int order;
+int getval(int bit) {
+	static int order[2];
 	int val, sum = 0, ret;
 	while ((ret = getbit()) == 0) {
-		sum += 1 << order;
-		order += 1;
+		sum += 1 << order[bit];
+		order[bit] += 1;
 	}
 	if (ret < 0)
 		return -1;
-	if (read_bits(&val, order))
+	if (read_bits(&val, order[bit]))
 		return -1;
-	order -= 1;
-	if (order < 0)
-		order = 0;
+	order[bit] -= 1;
+	if (order[bit] < 0)
+		order[bit] = 0;
 	return val + sum;
 }
 
@@ -49,12 +49,13 @@ int putrle(int bit) {
 	if (cnt < 0 || prv < 0)
 		return -1;
 	if (bit < 0)
-		return cnt = putval(cnt);
+		return cnt = putval(cnt, prv);
 	if (prv > 1)
 		return putbit(prv = bit);
 	if (bit != prv) {
+		cnt = putval(cnt, prv);
 		prv = bit;
-		return cnt = putval(cnt);
+		return cnt;
 	}
 	cnt++;
 	return 0;
@@ -72,7 +73,7 @@ int getrle() {
 	}
 	if (!cnt) {
 		bit = !bit;
-		cnt = getval();
+		cnt = getval(bit);
 		if (cnt < 0)
 			return -1;
 	} else {
