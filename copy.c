@@ -17,7 +17,6 @@ int main(int argc, char **argv) {
 	int bytes = getleb128();
 	if (bytes <= 0)
 		return 1;
-	fprintf(stderr, "%s: copying %d bytes\n", argv[0], bytes);
 	putleb128(bytes);
 	while (bytes--)
 		putbyte(getbyte());

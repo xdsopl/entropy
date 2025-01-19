@@ -72,23 +72,22 @@ int main(int argc, char **argv) {
 		return 1;
 	if (*argv[1] != 'e' && *argv[1] != 'd')
 		return 1;
+	int enc = *argv[1] == 'e';
 	int bytes = getleb128();
 	if (bytes <= 0)
 		return 1;
 	putleb128(bytes);
-	if (*argv[1] == 'e') {
-		fprintf(stderr, "%s: run length encoding %d bytes\n", argv[0], bytes);
+	if (enc) {
 		for (int bits = 8 * bytes; bits; --bits)
 			putrle(getbit());
 		putrle(1); // flush always
 		flush_bits();
 	} else {
-		fprintf(stderr, "%s: run length decoding %d bytes\n", argv[0], bytes);
 		for (int bits = 8 * bytes; bits; --bits)
 			putbit(getrle());
 	}
 	double change = 100.0 * (wrote_bytes - read_bytes) / read_bytes;
-	fprintf(stderr, "%s: read %d and wrote %d bytes %+.2f%%\n", argv[0], read_bytes, wrote_bytes, change);
+	fprintf(stderr, "%s: %s %d to %d bytes %+.2f%%\n", argv[0], enc ? "encoded" : "decoded", read_bytes, wrote_bytes, change);
 	return 0;
 }
 

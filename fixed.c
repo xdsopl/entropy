@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
 		return 1;
 	if (*argv[1] != 'g' && *argv[1] != 'v')
 		return 1;
+	int gen = *argv[1] == 'g';
 	int bytes = atoi(argv[2]);
 	if (bytes <= 0)
 		return 1;
@@ -21,8 +22,7 @@ int main(int argc, char **argv) {
 	if (prob < 0 || prob > 1)
 		return 1;
 	unsigned value = 4294967295 * prob;
-	if (*argv[1] == 'g') {
-		fprintf(stderr, "%s: generating %d bytes with probability %f\n", argv[0], bytes, prob);
+	if (gen) {
 		putleb128(bytes);
 		while (bytes--) {
 			int byte = 0;
@@ -32,9 +32,7 @@ int main(int argc, char **argv) {
 			}
 			putbyte(byte);
 		}
-		fprintf(stderr, "%s: wrote %d bytes\n", argv[0], wrote_bytes);
 	} else {
-		fprintf(stderr, "%s: verifying %d bytes with probability %f\n", argv[0], bytes, prob);
 		if (getleb128() != bytes)
 			return 1;
 		while (bytes--) {
@@ -46,8 +44,8 @@ int main(int argc, char **argv) {
 			if (getbyte() != byte)
 				return 1;
 		}
-		fprintf(stderr, "%s: read %d bytes\n", argv[0], read_bytes);
 	}
+	fprintf(stderr, "%s: %s %d bytes with probability %f\n", argv[0], gen ? "generated" : "verified", gen ? wrote_bytes : read_bytes, prob);
 	return 0;
 }
 
