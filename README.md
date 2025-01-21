@@ -78,3 +78,5 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | rle_zeros 	| -13.27%	|
 | rle_switch	| -33.41%	|
 | freq_varint	| +7.93%	|
+
+The bitstream coming from a [bit plane](https://en.wikipedia.org/wiki/Bit_plane) looks a bit more interesting than this sinusoidal probability but it is good enough to show the strength of `rle_switch` here: We alternate back and forth [run length encoding](https://en.wikipedia.org/wiki/Run-length_encoding) sequences of zeros and ones. This way we only need to encode the run length. We use adaptive [Rice coding](https://en.wikipedia.org/wiki/Golomb_coding) for the lengths while alternating between two contexts.
