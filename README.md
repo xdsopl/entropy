@@ -39,6 +39,8 @@
 | rle_switch	| +15.45%	|
 | freq_varint	| +82.69%	|
 
+Simply copying the data, also known as `do nothing` works best if we are dealing with a uniform distribution where all symbols have the same probability of occuring. `rle_leb128` also shows the property of resisting the urge to inflate the encoding.
+
 ## Testing a fixed probability of 25% ones (75% zeros):
 | Coder         | Change    |
 | ------------- | --------- |
