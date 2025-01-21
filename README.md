@@ -1,7 +1,7 @@
 # Entropy coding compression challenge of various Bernoulli distributions
 
 ## Conclusion
-`rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones.
+`rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones. `rle_leb128` is a solid choice if we need a simple byte based encoding and mostly deal with either lots of zeros or ones.
 
 ## Testing a fixed probability of 99% ones (1% zeros):
 | Coder         | Change    |
