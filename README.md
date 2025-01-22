@@ -13,13 +13,16 @@ The range of values after the transformation was -181 to 213. Inverting the nega
 As we go from the most significant to the least significant bit plane, our chances of getting long runs diminishes:
 
 ![./bit_plane g lena.pgm | ./sma 100](lena.png)
+
+The last 1/8 of the plot shows the appended sign bits.
+
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
-| rle_byte      | -54.89%   |
-| rle_zeros     | -63.27%   |
-| rle_switch    | -61.84%   |
-| freq_varint   | -47.74%   |
+| rle_byte      | -48.36%   |
+| rle_zeros     | -55.83%   |
+| rle_switch    | -54.14%   |
+| freq_varint   | -37.92%   |
 
 ## Testing a fixed probability of 0% ones (100% zeros):
 | Coder         | Change    |

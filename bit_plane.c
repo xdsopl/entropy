@@ -76,24 +76,31 @@ int main(int argc, char **argv) {
 	FILE *pgm = open_pgm(argv[2], &width, &height);
 	if (!pgm)
 		return 1;
-	int bytes = width * height;
-	unsigned char *buf = calloc(bytes, 1);
-	for (unsigned char *p = buf; p < buf + bytes; ++p)
+	int pixels = width * height;
+	unsigned char *buf = calloc(pixels, 1);
+	for (unsigned char *p = buf; p < buf + pixels; ++p)
 		*p = fgetc(pgm);
-	fclose(pgm);
+	int signs = pixels / 8;
+	int bytes = pixels + signs;
 	if (gen) {
 		putleb128(bytes);
 		for (int plane = 7; plane >= 0; --plane)
-			for (unsigned char *p = buf; p < buf + bytes; ++p)
+			for (unsigned char *p = buf; p < buf + pixels; ++p)
 				putbit((*p >> plane) & 1);
+		while (signs--)
+			putbyte(fgetc(pgm));
 	} else {
 		if (getleb128() != bytes)
 			return 1;
 		for (int plane = 7; plane >= 0; --plane)
-			for (unsigned char *p = buf; p < buf + bytes; ++p)
+			for (unsigned char *p = buf; p < buf + pixels; ++p)
 				if (getbit() != ((*p >> plane) & 1))
 					return 1;
+		while (signs--)
+			if (getbyte() != fgetc(pgm))
+				return 1;
 	}
+	fclose(pgm);
 	free(buf);
 	fprintf(stderr, "%s: %s %d bytes\n", argv[0], gen ? "generated" : "verified", gen ? wrote_bytes : read_bytes);
 	return 0;
