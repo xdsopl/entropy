@@ -5,6 +5,22 @@ The coders here are meant to be useful with binary streams, like those coming fr
 ## Conclusion
 `rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones. `rle_byte` is a solid choice if we need a simple byte based encoding and mostly deal with either lots of zeros or ones.
 
+## Testing bit planes from a CDF53 transformed lena image:
+The range of values after the transformation was -181 to 213. Inverting the negative values made it possible to store them as a one byte per pixel grayscale [PGM](https://en.wikipedia.org/wiki/Netpbm) image. The signs have been appended to the end of the [lena.pgm](lena.pgm) file, so the original transformation can be losslessly reconstructed.
+
+![CDF53 transformed lena](lena.jpg)
+
+As we go from the most significant to the least significant bit plane, our chances of getting long runs diminishes:
+
+![./bit_plane g lena.pgm | ./sma 100](lena.png)
+| Coder         | Change    |
+| ------------- | --------- |
+| copy          | 0%        |
+| rle_byte      | -54.89%   |
+| rle_zeros     | -63.27%   |
+| rle_switch    | -61.84%   |
+| freq_varint   | -47.74%   |
+
 ## Testing a fixed probability of 0% ones (100% zeros):
 | Coder         | Change    |
 | ------------- | --------- |
@@ -100,3 +116,4 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | freq_varint   | +7.93%    |
 
 The bitstream coming from a [bit plane](https://en.wikipedia.org/wiki/Bit_plane) looks a bit more interesting than this sinusoidal probability but it is good enough to show the strength of `rle_switch` here: We alternate back and forth [run length encoding](https://en.wikipedia.org/wiki/Run-length_encoding) sequences of zeros and ones. This way we only need to encode the run length. We use adaptive [Rice coding](https://en.wikipedia.org/wiki/Golomb_coding) for the lengths while alternating between two contexts.
+
