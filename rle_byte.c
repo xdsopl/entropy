@@ -15,18 +15,26 @@ int putrle(int byte) {
 		if (count < 0)
 			return 0;
 		else
-			return putleb128(count);
+			return putbyte(count);
 	}
 	if (byte == 0 || byte == 255) {
 		if (prev == byte) {
-			++count;
+			if (count < 255) {
+				++count;
+			} else {
+				if (putbyte(count))
+					return -1;
+				if (putbyte(byte))
+					return -1;
+				count = 0;
+			}
 		} else if (count < 0) {
 			if (putbyte(byte))
 				return -1;
 			count = 0;
 			prev = byte;
 		} else {
-			if (putleb128(count))
+			if (putbyte(count))
 				return -1;
 			if (putbyte(byte))
 				return -1;
@@ -35,7 +43,7 @@ int putrle(int byte) {
 		}
 	} else {
 		if (count >= 0) {
-			if (putleb128(count))
+			if (putbyte(count))
 				return -1;
 			count = -1;
 			prev = -1;
@@ -65,7 +73,7 @@ int main(int argc, char **argv) {
 			int byte = getbyte();
 			putbyte(byte);
 			if (byte == 0 || byte == 255)
-				for (int i = getleb128(); i; --i, --bytes)
+				for (int i = getbyte(); i; --i, --bytes)
 					putbyte(byte);
 		}
 	}

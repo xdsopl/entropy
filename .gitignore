@@ -2,7 +2,7 @@ sma
 sine
 fixed
 copy
-rle_leb128
+rle_byte
 rle_zeros
 rle_switch
 freq_varint

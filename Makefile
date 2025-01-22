@@ -1,7 +1,7 @@
 CFLAGS = -std=c99 -W -Wall -Ofast
 # CFLAGS += -g -fsanitize=address
 LDFLAGS = -lm
-CODERS = copy rle_leb128 rle_zeros rle_switch freq_varint
+CODERS = copy rle_byte rle_zeros rle_switch freq_varint
 
 test: fixed sine $(CODERS)
 	$(foreach coder,$(CODERS),./fixed g 1234 0.99 | ./$(coder) e | ./$(coder) d | ./fixed v 1234 0.99;)

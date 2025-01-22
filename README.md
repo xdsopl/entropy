@@ -3,13 +3,13 @@
 The coders here are meant to be useful with binary streams, like those coming from [fax machines](https://en.wikipedia.org/wiki/Fax) or [bit planes](https://en.wikipedia.org/wiki/Bit_plane).
 
 ## Conclusion
-`rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones. `rle_leb128` is a solid choice if we need a simple byte based encoding and mostly deal with either lots of zeros or ones.
+`rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones. `rle_byte` is a solid choice if we need a simple byte based encoding and mostly deal with either lots of zeros or ones.
 
 ## Testing a fixed probability of 99% ones (1% zeros):
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
-| rle_leb128    | -78.07%   |
+| rle_byte      | -78.07%   |
 | rle_zeros     | +0.97%    |
 | rle_switch    | -90.61%   |
 | freq_varint   | -82.61%   |
@@ -18,7 +18,7 @@ The coders here are meant to be useful with binary streams, like those coming fr
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
-| rle_leb128	| +7.77%	|
+| rle_byte      | +7.77%	|
 | rle_zeros 	| +8.25%	|
 | rle_switch	| -41.34%	|
 | freq_varint	| -38.92%	|
@@ -27,7 +27,7 @@ The coders here are meant to be useful with binary streams, like those coming fr
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
-| rle_leb128	| +6.96%	|
+| rle_byte      | +6.96%	|
 | rle_zeros 	| +15.53%	|
 | rle_switch	| -2.27%	|
 | freq_varint	| +24.03%	|
@@ -36,18 +36,18 @@ The coders here are meant to be useful with binary streams, like those coming fr
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
-| rle_leb128	| +0.65%	|
+| rle_byte      | +0.65%	|
 | rle_zeros 	| +15.45%	|
 | rle_switch	| +15.45%	|
 | freq_varint	| +82.69%	|
 
-Simply copying the data, also known as `do nothing` works best if we are dealing with a uniform distribution where all symbols have the same probability of occuring. `rle_leb128` also shows the property of resisting the urge to inflate the encoding.
+Simply copying the data, also known as `do nothing` works best if we are dealing with a uniform distribution where all symbols have the same probability of occuring. `rle_byte` also shows the property of resisting the urge to inflate the encoding.
 
 ## Testing a fixed probability of 25% ones (75% zeros):
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
-| rle_leb128	| +7.12%	|
+| rle_byte      | +7.12%	|
 | rle_zeros 	| -9.30%	|
 | rle_switch	| -2.02%	|
 | freq_varint	| +24.68%	|
@@ -57,7 +57,7 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
-| rle_leb128	| +10.36%	|
+| rle_byte      | +10.36%	|
 | rle_zeros 	| -45.47%	|
 | rle_switch	| -39.72%	|
 | freq_varint	| -37.06%	|
@@ -66,7 +66,7 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
-| rle_leb128	| -74.43%	|
+| rle_byte      | -74.43%	|
 | rle_zeros 	| -90.21%	|
 | rle_switch	| -89.08%	|
 | freq_varint	| -82.04%	|
@@ -76,7 +76,7 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
-| rle_leb128	| -15.78%	|
+| rle_byte      | -15.78%	|
 | rle_zeros 	| -13.27%	|
 | rle_switch	| -33.41%	|
 | freq_varint	| +7.93%	|
