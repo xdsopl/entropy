@@ -18,8 +18,8 @@ Dithering makes it possible to bring grayscale pictures to paper using various p
 | ------------- | --------- |
 | copy          | 0%        |
 | rle_byte      | +0.06%    |
-| rle_zeros     | +22.38%   |
-| rle_switch    | -3.71%    |
+| rle_zeros     | +23.94%   |
+| rle_switch    | -4.90%    |
 | freq_varint   | -0.20%    |
 
 ## Testing binary image of text:
@@ -33,8 +33,8 @@ Binary images of text on the other hand are easier to compress:
 | ------------- | --------- |
 | copy          | 0%        |
 | rle_byte      | -87.30%   |
-| rle_zeros     | -89.73%   |
-| rle_switch    | -91.42%   |
+| rle_zeros     | -89.69%   |
+| rle_switch    | -92.20%   |
 | freq_varint   | -81.23%   |
 
 ## Testing bit planes from a CDF53 transformed lena image:
