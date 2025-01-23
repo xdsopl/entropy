@@ -22,6 +22,21 @@ Dithering makes it possible to bring grayscale pictures to paper using various p
 | rle_switch    | -3.71%    |
 | freq_varint   | -0.20%    |
 
+## Testing binary image of text:
+![one page about quadrature decoders](paper.jpg)
+
+Binary images of text on the other hand are easier to compress:
+
+![./fax_machine g paper.pbm | ./sma 100](paper_sma.png)
+
+| Coder         | Change    |
+| ------------- | --------- |
+| copy          | 0%        |
+| rle_byte      | -87.30%   |
+| rle_zeros     | -89.73%   |
+| rle_switch    | -91.42%   |
+| freq_varint   | -81.23%   |
+
 ## Testing bit planes from a CDF53 transformed lena image:
 The range of values after the transformation was -181 to 213. Inverting the negative values made it possible to store them as a one byte per pixel grayscale [PGM](https://en.wikipedia.org/wiki/Netpbm) image. The signs have been appended to the end of the [lena_cdf53.pgm](lena_cdf53.pgm) file, so the original transformation can be losslessly reconstructed.
 

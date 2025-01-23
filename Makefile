@@ -16,6 +16,7 @@ test: fixed sine bit_plane fax_machine $(CODERS)
 	$(foreach coder,$(CODERS),./sine g 1234 10 | ./$(coder) e | ./$(coder) d | ./sine v 1234 10;)
 	$(foreach coder,$(CODERS),./bit_plane g lena_cdf53.pgm | ./$(coder) e | ./$(coder) d | ./bit_plane v lena_cdf53.pgm;)
 	$(foreach coder,$(CODERS),./fax_machine g lena_fax.pbm | ./$(coder) e | ./$(coder) d | ./fax_machine v lena_fax.pbm;)
+	$(foreach coder,$(CODERS),./fax_machine g paper.pbm | ./$(coder) e | ./$(coder) d | ./fax_machine v paper.pbm;)
 
 info: fixed sine bit_plane fax_machine $(CODERS)
 	$(foreach coder,$(CODERS),./fixed g 1234 1 2> /dev/null | ./$(coder) e > /dev/null;)
@@ -30,6 +31,7 @@ info: fixed sine bit_plane fax_machine $(CODERS)
 	$(foreach coder,$(CODERS),./sine g 1234 10 2> /dev/null | ./$(coder) e > /dev/null;)
 	$(foreach coder,$(CODERS),./bit_plane g lena_cdf53.pgm 2> /dev/null | ./$(coder) e > /dev/null;)
 	$(foreach coder,$(CODERS),./fax_machine g lena_fax.pbm 2> /dev/null | ./$(coder) e > /dev/null;)
+	$(foreach coder,$(CODERS),./fax_machine g paper.pbm 2> /dev/null | ./$(coder) e > /dev/null;)
 
 clean:
 	rm -f sma sine fixed bit_plane fax_machine $(CODERS)
