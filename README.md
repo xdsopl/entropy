@@ -5,6 +5,23 @@ The coders here are meant to be useful with binary streams, like those coming fr
 ## Conclusion
 `rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones. `rle_byte` is a solid choice if we need a simple byte based encoding and mostly deal with either lots of zeros or ones.
 
+## Testing binary image of dithered lena image:
+The binary image was created by applying [Floyd–Steinberg dithering](https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering) to the grayscale image:
+
+![Dithered lena](lena_fax.png)
+
+Dithering makes it possible to bring grayscale pictures to paper using various printing techniques. Unfortunately it also makes it hard to compress, as noise is intentionally introduced:
+
+![./fax_machine g lena_fax.pbm | ./sma 100](lena_fax_sma.png)
+
+| Coder         | Change    |
+| ------------- | --------- |
+| copy          | 0%        |
+| rle_byte      | +0.06%    |
+| rle_zeros     | +22.38%   |
+| rle_switch    | -3.71%    |
+| freq_varint   | -0.20%    |
+
 ## Testing bit planes from a CDF53 transformed lena image:
 The range of values after the transformation was -181 to 213. Inverting the negative values made it possible to store them as a one byte per pixel grayscale [PGM](https://en.wikipedia.org/wiki/Netpbm) image. The signs have been appended to the end of the [lena_cdf53.pgm](lena_cdf53.pgm) file, so the original transformation can be losslessly reconstructed.
 
