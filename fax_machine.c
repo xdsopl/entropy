@@ -75,20 +75,16 @@ int main(int argc, char **argv) {
 	int bytes = pixels / 8;
 	if (gen) {
 		putleb128(bytes);
-		while (bytes--) {
-			int byte = fgetc(pbm);
-			for (int i = 7; i >= 0; --i)
-				putbit((byte >> i) & 1);
-		}
+		while (bytes--)
+			for (int i = 7, b = fgetc(pbm); i >= 0; --i)
+				putbit((b >> i) & 1);
 	} else {
 		if (getleb128() != bytes)
 			return 1;
-		while (bytes--) {
-			int byte = fgetc(pbm);
-			for (int i = 7; i >= 0; --i)
-				if (getbit() != ((byte >> i) & 1))
+		while (bytes--)
+			for (int i = 7, b = fgetc(pbm); i >= 0; --i)
+				if (getbit() != ((b >> i) & 1))
 					return 1;
-		}
 	}
 	fclose(pbm);
 	fprintf(stderr, "%s: %s %d bytes\n", argv[0], gen ? "generated" : "verified", gen ? wrote_bytes : read_bytes);
