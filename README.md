@@ -6,13 +6,13 @@ The coders here are meant to be useful with binary streams, like those coming fr
 `rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones. `rle_byte` is a solid choice if we need a simple byte based encoding and mostly deal with either lots of zeros or ones.
 
 ## Testing bit planes from a CDF53 transformed lena image:
-The range of values after the transformation was -181 to 213. Inverting the negative values made it possible to store them as a one byte per pixel grayscale [PGM](https://en.wikipedia.org/wiki/Netpbm) image. The signs have been appended to the end of the [lena.pgm](lena.pgm) file, so the original transformation can be losslessly reconstructed.
+The range of values after the transformation was -181 to 213. Inverting the negative values made it possible to store them as a one byte per pixel grayscale [PGM](https://en.wikipedia.org/wiki/Netpbm) image. The signs have been appended to the end of the [lena_cdf53.pgm](lena_cdf53.pgm) file, so the original transformation can be losslessly reconstructed.
 
-![CDF53 transformed lena](lena.jpg)
+![CDF53 transformed lena](lena_cdf53.jpg)
 
 As we go from the most significant to the least significant bit plane, our chances of getting long runs diminishes:
 
-![./bit_plane g lena.pgm | ./sma 100](lena.png)
+![./bit_plane g lena_cdf53.pgm | ./sma 100](lena_cdf53_sma.png)
 
 The last 1/8 of the plot shows the appended sign bits.
 
