@@ -24,27 +24,120 @@ const int top_value = (1 << code_bits) - 1;
 const int quarter = top_value / 4 + 1;
 const int half = 2 * quarter;
 const int third = 3 * quarter;
-const int max_freq = 255;
+const int factor = 256;
 
-int encode(int bit, int freq) {
+int encode(int symbol, int freq) {
+	static long follow, low, high = top_value;
+	if (symbol < 0) {
+		++follow;
+		int out = low < quarter;
+		if (putbit(!out))
+			return -1;
+		while (follow) {
+			if (putbit(out))
+				return -1;
+			--follow;
+		}
+		return 0;
+	}
+	long range = high - low + 1;
+	long offset = (range * freq) / factor;
+	if (symbol)
+		low += offset;
+	else
+		high = low + offset - 1;
+	while (1) {
+		if (high < half) {
+			if (putbit(0))
+				return -1;
+			while (follow) {
+				if (putbit(1))
+					return -1;
+				--follow;
+			}
+		} else if (low >= half) {
+			if (putbit(1))
+				return -1;
+			while (follow) {
+				if (putbit(0))
+					return -1;
+				--follow;
+			}
+			low -= half;
+			high -= half;
+		} else if (low >= quarter && high < third) {
+			++follow;
+			low -= quarter;
+			high -= quarter;
+		} else {
+			break;
+		}
+		low *= 2;
+		high = 2 * high + 1;
+	}
 	return 0;
 }
 
 int decode(int freq) {
-	return 0;
+	static long value, low, high = top_value;
+	if (freq < 0) {
+		for (int i = 0; i < code_bits; ++i) {
+			int bit = getbit();
+			if (bit < 0)
+				return -1;
+			value <<= 1;
+			value |= bit;
+		}
+		return 0;
+	}
+	long range = high - low + 1;
+	int current = ((value - low + 1) * factor - 1) / range;
+	int symbol = current >= freq;
+	long offset = (range * freq) / factor;
+	if (symbol)
+		low += offset;
+	else
+		high = low + offset - 1;
+	while (1) {
+		if (high < half) {
+		} else if (low >= half) {
+			value -= half;
+			low -= half;
+			high -= half;
+		} else if (low >= quarter && high < third) {
+			value -= quarter;
+			low -= quarter;
+			high -= quarter;
+		} else {
+			break;
+		}
+		low *= 2;
+		high = 2 * high + 1;
+		value <<= 1;
+		static int eof;
+		if (!eof) {
+			int bit = getbit();
+			if (bit < 0) {
+				eof = 1;
+				bit = 0;
+			}
+			value |= bit;
+		}
+	}
+	return symbol;
 }
 
 int putac(int bit) {
 	static int init, freq;
 	if (!init) {
 		init = 1;
-		for (int i = 0; i < max_freq; ++i)
-			freq = 1 + sma(i & 1, max_freq - 2);
+		for (int i = 0; i < factor; ++i)
+			freq = 1 + sma(i & 1, factor - 2);
 		//fprintf(stderr, "freq = %d\n", freq);
 	}
 	if (encode(bit, freq))
 		return -1;
-	freq = 1 + sma(!bit, max_freq - 2);
+	freq = 1 + sma(!bit, factor - 2);
 	//fprintf(stderr, "freq = %d\n", freq);
 	return 0;
 }
@@ -53,13 +146,15 @@ int getac() {
 	static int init, freq;
 	if (!init) {
 		init = 1;
-		for (int i = 0; i < max_freq; ++i)
-			freq = 1 + sma(i & 1, max_freq - 2);
+		for (int i = 0; i < factor; ++i)
+			freq = 1 + sma(i & 1, factor - 2);
+		if (decode(-1))
+			return -1;
 	}
 	int bit = decode(freq);
 	if (bit < 0)
 		return -1;
-	freq = 1 + sma(!bit, max_freq - 2);
+	freq = 1 + sma(!bit, factor - 2);
 	return bit;
 }
 
