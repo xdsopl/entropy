@@ -14,6 +14,16 @@ unsigned xorshift32() {
 	return y;
 }
 
+int sma(int val, int len) {
+	static int hist[1024];
+	static int pos, sum;
+	sum += val - hist[pos];
+	hist[pos] = val;
+	if (++pos >= len)
+		pos = 0;
+	return sum;
+}
+
 static int read_bytes;
 static int wrote_bytes;
 

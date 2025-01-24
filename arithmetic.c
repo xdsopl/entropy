@@ -9,16 +9,6 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
-int sma(int val, int len) {
-	static int hist[1024];
-	static int pos, sum;
-	sum += val - hist[pos];
-	hist[pos] = val;
-	if (++pos >= len)
-		pos = 0;
-	return sum;
-}
-
 const int code_bits = 16;
 const int top_value = (1 << code_bits) - 1;
 const int quarter = top_value / 4 + 1;
@@ -26,43 +16,34 @@ const int half = 2 * quarter;
 const int third = 3 * quarter;
 const int factor = 256;
 
-int encode(int symbol, int freq) {
-	static int follow, low, high = top_value;
-	if (symbol < 0) {
-		++follow;
-		int out = low < quarter;
-		if (putbit(!out))
+int putbits(int bit, int follow) {
+	if (bit < 0 || follow < 0)
+		return -1;
+	if (putbit(bit))
+		return -1;
+	while (follow--)
+		if (putbit(!bit))
 			return -1;
-		while (follow) {
-			if (putbit(out))
-				return -1;
-			--follow;
-		}
-		return 0;
-	}
+	return 0;
+}
+
+int encode(int bit, int freq) {
+	static int follow, low, high = top_value;
+	if (bit < 0)
+		return follow = putbits(low >= quarter, follow + 1);
 	int range = high - low + 1;
 	int offset = (range * freq) / factor;
-	if (symbol)
+	if (bit)
 		low += offset;
 	else
 		high = low + offset - 1;
 	while (1) {
 		if (high < half) {
-			if (putbit(0))
+			if ((follow = putbits(0, follow)))
 				return -1;
-			while (follow) {
-				if (putbit(1))
-					return -1;
-				--follow;
-			}
 		} else if (low >= half) {
-			if (putbit(1))
+			if ((follow = putbits(1, follow)))
 				return -1;
-			while (follow) {
-				if (putbit(0))
-					return -1;
-				--follow;
-			}
 			low -= half;
 			high -= half;
 		} else if (low >= quarter && high < third) {
@@ -78,22 +59,35 @@ int encode(int symbol, int freq) {
 	return 0;
 }
 
+int getabit() {
+	static int eof_cnt;
+	if (eof_cnt > code_bits - 2)
+		return -1;
+	if (eof_cnt) {
+		++eof_cnt;
+		return 0;
+	}
+	int bit = getbit();
+	if (bit < 0) {
+		eof_cnt = 1;
+		return 0;
+	}
+	return bit;
+}
+
 int decode(int freq) {
 	static int value, low, high = top_value;
 	if (freq < 0) {
 		for (int i = 0; i < code_bits; ++i) {
-			int bit = getbit();
-			if (bit < 0)
-				return -1;
 			value <<= 1;
-			value |= bit;
+			value |= getabit();
 		}
 		return 0;
 	}
 	int range = high - low + 1;
-	int symbol = (value - low + 1) * factor >= freq * range + 1;
+	int bit = (value - low + 1) * factor >= freq * range + 1;
 	int offset = (range * freq) / factor;
-	if (symbol)
+	if (bit)
 		low += offset;
 	else
 		high = low + offset - 1;
@@ -113,17 +107,13 @@ int decode(int freq) {
 		low *= 2;
 		high = 2 * high + 1;
 		value <<= 1;
-		static int eof;
-		if (!eof) {
-			int bit = getbit();
-			if (bit < 0) {
-				eof = 1;
-				bit = 0;
-			}
-			value |= bit;
-		}
+		value |= getabit();
 	}
-	return symbol;
+	return bit;
+}
+
+int sma_freq(int bit) {
+	return 1 + sma(!bit, factor - 2);
 }
 
 int putac(int bit) {
@@ -131,13 +121,11 @@ int putac(int bit) {
 	if (!init) {
 		init = 1;
 		for (int i = 0; i < factor; ++i)
-			freq = 1 + sma(i & 1, factor - 2);
-		//fprintf(stderr, "freq = %d\n", freq);
+			freq = sma_freq(i & 1);
 	}
 	if (encode(bit, freq))
 		return -1;
-	freq = 1 + sma(!bit, factor - 2);
-	//fprintf(stderr, "freq = %d\n", freq);
+	freq = sma_freq(bit);
 	return 0;
 }
 
@@ -146,14 +134,14 @@ int getac() {
 	if (!init) {
 		init = 1;
 		for (int i = 0; i < factor; ++i)
-			freq = 1 + sma(i & 1, factor - 2);
+			freq = sma_freq(i & 1);
 		if (decode(-1))
 			return -1;
 	}
 	int bit = decode(freq);
 	if (bit < 0)
 		return -1;
-	freq = 1 + sma(!bit, factor - 2);
+	freq = sma_freq(bit);
 	return bit;
 }
 
@@ -170,7 +158,7 @@ int main(int argc, char **argv) {
 	if (enc) {
 		for (int bits = 8 * bytes; bits; --bits)
 			putac(getbit());
-		putac(-1);
+		putac(-1); // flush
 		flush_bits();
 	} else {
 		for (int bits = 8 * bytes; bits; --bits)

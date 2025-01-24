@@ -18,16 +18,6 @@ int popcnt(int x) {
 	return cnt;
 }
 
-int sma(int val, int len) {
-	static int hist[1024];
-	static int pos, sum;
-	sum += val - hist[pos];
-	hist[pos] = val;
-	if (++pos >= len)
-		pos = 0;
-	return sum;
-}
-
 int main(int argc, char **argv) {
 	if (argc != 2)
 		return 1;
