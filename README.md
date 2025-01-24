@@ -2,10 +2,11 @@
 ## About
 The coders here are meant to be useful with binary streams, like those coming from [fax machines](https://en.wikipedia.org/wiki/Fax) or [bit planes](https://en.wikipedia.org/wiki/Bit_plane).
 * copy: This is the `do nothing` coder
-* rle_byte: Byte values between 1 and 254 are simply copied, while either 0 or 255 values are run length encoded up to a run length of 256 bytes
+* rle_byte: Byte values between 1 and 254 are simply copied, while either 0 or 255 values are [run length encoded](https://en.wikipedia.org/wiki/Run-length_encoding) up to a run length of 256 bytes
 * rle_zeros: We only encode the run length of bits with value zero using adaptive [Rice coding](https://en.wikipedia.org/wiki/Golomb_coding). This means that every bit with the value one gets encoded by a run length of zero zeros.
 * rle_switch: We alternate back and forth [run length encoding](https://en.wikipedia.org/wiki/Run-length_encoding) sequences of zeros and ones. This way we only need to encode the run length. We use adaptive [Rice coding](https://en.wikipedia.org/wiki/Golomb_coding) for the lengths while alternating between two contexts.
-* freq_varint: Currently the only non-streaming coder. We create a histogram of byte values and use that to create a permutation that maps frequent values to smaller values and encode those using a variable length integer code.
+* freq_varint: Currently the only non-streaming coder. We create a [histogram](https://en.wikipedia.org/wiki/Histogram) of byte values and use that to create a [permutation](https://en.wikipedia.org/wiki/Permutation) that maps frequent values to smaller values and encode those using a [variable length integer code](https://en.wikipedia.org/wiki/Universal_code_(data_compression)).
+* arithmetic: We encode the current bit according to the past probability of some bits via [Arithmetic coding](https://en.wikipedia.org/wiki/Arithmetic_coding)
 
 ## Conclusion
 `rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones. `rle_byte` is a solid choice if we need a simple byte based encoding and mostly deal with either lots of zeros or ones.

@@ -1,9 +1,10 @@
 CFLAGS = -std=c99 -W -Wall -Ofast
 # CFLAGS += -g -fsanitize=address
 LDFLAGS = -lm
-CODERS = copy rle_byte rle_zeros rle_switch freq_varint
+STREAMS = fixed sine bit_plane fax_machine
+CODERS = copy rle_byte rle_zeros rle_switch freq_varint arithmetic
 
-test: fixed sine bit_plane fax_machine $(CODERS)
+test: $(STREAMS) $(CODERS)
 	$(foreach coder,$(CODERS),./fixed g 1234 1 | ./$(coder) e | ./$(coder) d | ./fixed v 1234 1;)
 	$(foreach coder,$(CODERS),./fixed g 1234 0.99 | ./$(coder) e | ./$(coder) d | ./fixed v 1234 0.99;)
 	$(foreach coder,$(CODERS),./fixed g 1234 0.9 | ./$(coder) e | ./$(coder) d | ./fixed v 1234 0.9;)
@@ -18,7 +19,7 @@ test: fixed sine bit_plane fax_machine $(CODERS)
 	$(foreach coder,$(CODERS),./fax_machine g lena_fax.pbm | ./$(coder) e | ./$(coder) d | ./fax_machine v lena_fax.pbm;)
 	$(foreach coder,$(CODERS),./fax_machine g paper.pbm | ./$(coder) e | ./$(coder) d | ./fax_machine v paper.pbm;)
 
-info: fixed sine bit_plane fax_machine $(CODERS)
+info: $(STREAMS) $(CODERS)
 	$(foreach coder,$(CODERS),./fixed g 1234 1 2> /dev/null | ./$(coder) e > /dev/null;)
 	$(foreach coder,$(CODERS),./fixed g 1234 0.99 2> /dev/null | ./$(coder) e > /dev/null;)
 	$(foreach coder,$(CODERS),./fixed g 1234 0.9 2> /dev/null | ./$(coder) e > /dev/null;)
@@ -34,5 +35,5 @@ info: fixed sine bit_plane fax_machine $(CODERS)
 	$(foreach coder,$(CODERS),./fax_machine g paper.pbm 2> /dev/null | ./$(coder) e > /dev/null;)
 
 clean:
-	rm -f sma sine fixed bit_plane fax_machine $(CODERS)
+	rm -f sma $(STREAMS) $(CODERS)
 
