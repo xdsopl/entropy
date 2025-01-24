@@ -91,8 +91,7 @@ int decode(int freq) {
 		return 0;
 	}
 	int range = high - low + 1;
-	int current = ((value - low + 1) * factor - 1) / range;
-	int symbol = current >= freq;
+	int symbol = (value - low + 1) * factor >= freq * range + 1;
 	int offset = (range * freq) / factor;
 	if (symbol)
 		low += offset;
