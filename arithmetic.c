@@ -14,7 +14,7 @@ const int top_value = (1 << code_bits) - 1;
 const int quarter = top_value / 4 + 1;
 const int half = 2 * quarter;
 const int third = 3 * quarter;
-const int factor = 256;
+const int factor = 32;
 
 int putbits(int bit, int follow) {
 	if (bit < 0 || follow < 0)
