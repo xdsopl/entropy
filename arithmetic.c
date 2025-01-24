@@ -39,12 +39,13 @@ int putac(int bit) {
 	if (!init) {
 		init = 1;
 		for (int i = 0; i < max_freq; ++i)
-			freq = 1 + sma(i & 1, max_freq - 1);
+			freq = 1 + sma(i & 1, max_freq - 2);
 		//fprintf(stderr, "freq = %d\n", freq);
 	}
 	if (encode(bit, freq))
 		return -1;
-	freq = 1 + sma(!bit, max_freq - 1);
+	freq = 1 + sma(!bit, max_freq - 2);
+	//fprintf(stderr, "freq = %d\n", freq);
 	return 0;
 }
 
@@ -52,14 +53,13 @@ int getac() {
 	static int init, freq;
 	if (!init) {
 		init = 1;
-		for (int i = 0; i <= max_freq; ++i)
-			freq = 1 + sma(i & 1, max_freq - 1);
-		//fprintf(stderr, "freq = %d\n", freq);
+		for (int i = 0; i < max_freq; ++i)
+			freq = 1 + sma(i & 1, max_freq - 2);
 	}
 	int bit = decode(freq);
 	if (bit < 0)
 		return -1;
-	freq = 1 + sma(!bit, max_freq - 1);
+	freq = 1 + sma(!bit, max_freq - 2);
 	return bit;
 }
 
