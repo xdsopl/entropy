@@ -27,7 +27,7 @@ const int third = 3 * quarter;
 const int factor = 256;
 
 int encode(int symbol, int freq) {
-	static long follow, low, high = top_value;
+	static int follow, low, high = top_value;
 	if (symbol < 0) {
 		++follow;
 		int out = low < quarter;
@@ -40,8 +40,8 @@ int encode(int symbol, int freq) {
 		}
 		return 0;
 	}
-	long range = high - low + 1;
-	long offset = (range * freq) / factor;
+	int range = high - low + 1;
+	int offset = (range * freq) / factor;
 	if (symbol)
 		low += offset;
 	else
@@ -79,7 +79,7 @@ int encode(int symbol, int freq) {
 }
 
 int decode(int freq) {
-	static long value, low, high = top_value;
+	static int value, low, high = top_value;
 	if (freq < 0) {
 		for (int i = 0; i < code_bits; ++i) {
 			int bit = getbit();
@@ -90,10 +90,10 @@ int decode(int freq) {
 		}
 		return 0;
 	}
-	long range = high - low + 1;
+	int range = high - low + 1;
 	int current = ((value - low + 1) * factor - 1) / range;
 	int symbol = current >= freq;
-	long offset = (range * freq) / factor;
+	int offset = (range * freq) / factor;
 	if (symbol)
 		low += offset;
 	else
