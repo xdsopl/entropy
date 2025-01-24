@@ -32,7 +32,8 @@ int encode(int bit, int freq) {
 	if (bit < 0)
 		return follow = putbits(low >= quarter, follow + 1);
 	int range = high - low + 1;
-	int offset = (range * freq) / factor;
+	int point = range * freq;
+	int offset = point / factor;
 	if (bit)
 		low += offset;
 	else
@@ -85,14 +86,16 @@ int decode(int freq) {
 		return 0;
 	}
 	int range = high - low + 1;
-	int bit = (value - low + 1) * factor >= freq * range + 1;
-	int offset = (range * freq) / factor;
+	int point = range * freq;
+	int bit = (value - low + 1) * factor >= point + 1;
+	int offset = point / factor;
 	if (bit)
 		low += offset;
 	else
 		high = low + offset - 1;
 	while (1) {
 		if (high < half) {
+			// nothing to see here
 		} else if (low >= half) {
 			value -= half;
 			low -= half;
