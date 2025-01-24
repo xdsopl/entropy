@@ -9,7 +9,9 @@ The coders here are meant to be useful with binary streams, like those coming fr
 * arithmetic: We encode the current bit according to the past probability of some bits via [Arithmetic coding](https://en.wikipedia.org/wiki/Arithmetic_coding)
 
 ## Conclusion
-`rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones. `rle_byte` is a solid choice if we need a simple byte based encoding and mostly deal with either lots of zeros or ones.
+`rle_switch` is a robust choice when the distribution of zeros and ones can change between extremes but is beaten by `rle_zeros` the moment we have more zeros than ones.
+`rle_byte` is a solid choice if we need a simple byte based encoding and mostly deal with either lots of zeros or ones.
+Last but not least, `arithmetic` is great for cracking the hard cases.
 
 ## Testing binary image of dithered lena image:
 The binary image was created by applying [Floyd–Steinberg dithering](https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering) to the grayscale image:
@@ -28,6 +30,8 @@ Dithering makes it possible to bring grayscale pictures to paper using various p
 | rle_switch    | -4.90%    |
 | freq_varint   | -0.20%    |
 | arithmetic	| -13.32%   |
+
+Nice to see that `arithmetic` here is able to achieve more with this tough data.
 
 ## Testing binary image of text:
 ![one page about quadrature decoders](paper.jpg)
@@ -169,5 +173,5 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | freq_varint   | +7.93%    |
 | arithmetic	| -41.59%   |
 
-The bitstream coming from a [bit plane](https://en.wikipedia.org/wiki/Bit_plane) looks a bit more interesting than this sinusoidal probability but it is good enough to show the strength of `rle_switch` here.
+The bitstream coming from a [bit plane](https://en.wikipedia.org/wiki/Bit_plane) looks a bit more interesting than this sinusoidal probability but it is good enough to show the strength of `rle_switch` here. `arithmetic` is doing better still.
 
