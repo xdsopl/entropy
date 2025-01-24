@@ -19,10 +19,6 @@ int sma(int val, int len) {
 	return sum;
 }
 
-int clamp(int x, int a, int b) {
-	return x < a ? a : x > b ? b : x;
-}
-
 const int code_bits = 16;
 const int top_value = (1 << code_bits) - 1;
 const int quarter = top_value / 4 + 1;
@@ -42,13 +38,13 @@ int putac(int bit) {
 	static int init, freq;
 	if (!init) {
 		init = 1;
-		for (int i = 0; i <= max_freq; ++i)
-			freq = clamp(sma(i & 1, max_freq), 1, max_freq - 1);
+		for (int i = 0; i < max_freq; ++i)
+			freq = 1 + sma(i & 1, max_freq - 1);
 		//fprintf(stderr, "freq = %d\n", freq);
 	}
 	if (encode(bit, freq))
 		return -1;
-	freq = clamp(sma(bit, max_freq), 1, max_freq - 1);
+	freq = 1 + sma(!bit, max_freq - 1);
 	return 0;
 }
 
@@ -57,13 +53,13 @@ int getac() {
 	if (!init) {
 		init = 1;
 		for (int i = 0; i <= max_freq; ++i)
-			freq = clamp(sma(i & 1, max_freq), 1, max_freq - 1);
+			freq = 1 + sma(i & 1, max_freq - 1);
 		//fprintf(stderr, "freq = %d\n", freq);
 	}
 	int bit = decode(freq);
 	if (bit < 0)
 		return -1;
-	freq = clamp(sma(bit, max_freq), 1, max_freq - 1);
+	freq = 1 + sma(!bit, max_freq - 1);
 	return bit;
 }
 
@@ -80,6 +76,7 @@ int main(int argc, char **argv) {
 	if (enc) {
 		for (int bits = 8 * bytes; bits; --bits)
 			putac(getbit());
+		putac(-1);
 		flush_bits();
 	} else {
 		for (int bits = 8 * bytes; bits; --bits)
