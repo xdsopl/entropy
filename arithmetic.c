@@ -112,36 +112,34 @@ int decode(int freq) {
 	return bit;
 }
 
-int sma_freq(int bit) {
-	return 1 + sma(!bit, factor - 2);
+int freq32(int bit) {
+	static int hist = 1431655765, sum = 16;
+	int old = (hist >> 31) & 1;
+	sum += !bit - old;
+	hist <<= 1;
+	hist |= !bit;
+	return sum < 1 ? 1 : sum > 31 ? 31 : sum;
 }
 
 int putac(int bit) {
-	static int init, freq;
-	if (!init) {
-		init = 1;
-		for (int i = 0; i < factor; ++i)
-			freq = sma_freq(i & 1);
-	}
+	static int freq = 16;
 	if (encode(bit, freq))
 		return -1;
-	freq = sma_freq(bit);
+	freq = freq32(bit);
 	return 0;
 }
 
 int getac() {
-	static int init, freq;
+	static int init, freq = 16;
 	if (!init) {
 		init = 1;
-		for (int i = 0; i < factor; ++i)
-			freq = sma_freq(i & 1);
 		if (decode(-1))
 			return -1;
 	}
 	int bit = decode(freq);
 	if (bit < 0)
 		return -1;
-	freq = sma_freq(bit);
+	freq = freq32(bit);
 	return bit;
 }
 
