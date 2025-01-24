@@ -27,6 +27,7 @@ Dithering makes it possible to bring grayscale pictures to paper using various p
 | rle_zeros     | +23.94%   |
 | rle_switch    | -4.90%    |
 | freq_varint   | -0.20%    |
+| arithmetic	| -13.32%   |
 
 ## Testing binary image of text:
 ![one page about quadrature decoders](paper.jpg)
@@ -42,6 +43,7 @@ Binary images of text on the other hand are easier to compress:
 | rle_zeros     | -89.69%   |
 | rle_switch    | -92.20%   |
 | freq_varint   | -81.23%   |
+| arithmetic	| -86.53%   |
 
 ## Testing bit planes from a CDF53 transformed lena image:
 The range of values after the transformation was -181 to 213. Inverting the negative values made it possible to store them as a one byte per pixel grayscale [PGM](https://en.wikipedia.org/wiki/Netpbm) image. The signs have been appended to the end of the [lena_cdf53.pgm](lena_cdf53.pgm) file, so the original transformation can be losslessly reconstructed.
@@ -61,8 +63,9 @@ The last 1/8 of the plot shows the appended sign bits.
 | rle_zeros     | -55.83%   |
 | rle_switch    | -54.14%   |
 | freq_varint   | -37.92%   |
+| arithmetic	| -57.03%   |
 
-## Testing a fixed probability of 0% ones (100% zeros):
+## Testing a fixed probability of 100% ones (0% zeros):
 | Coder         | Change    |
 | ------------- | --------- |
 | copy          | 0%        |
@@ -70,6 +73,7 @@ The last 1/8 of the plot shows the appended sign bits.
 | rle_zeros     | +0.97%    |
 | rle_switch    | -99.51%   |
 | freq_varint   | -87.14%   |
+| arithmetic	| -95.06%   |
 
 ## Testing a fixed probability of 99% ones (1% zeros):
 | Coder         | Change    |
@@ -79,6 +83,7 @@ The last 1/8 of the plot shows the appended sign bits.
 | rle_zeros     | +0.97%    |
 | rle_switch    | -90.61%   |
 | freq_varint   | -82.61%   |
+| arithmetic	| -90.21%   |
 
 ## Testing a fixed probability of 90% ones (10% zeros):
 | Coder         | Change    |
@@ -88,6 +93,7 @@ The last 1/8 of the plot shows the appended sign bits.
 | rle_zeros     | +8.25%    |
 | rle_switch    | -41.34%   |
 | freq_varint   | -38.92%   |
+| arithmetic	| -48.95%   |
 
 ## Testing a fixed probability of 75% ones (25% zeros):
 | Coder         | Change    |
@@ -97,6 +103,7 @@ The last 1/8 of the plot shows the appended sign bits.
 | rle_zeros     | +15.53%   |
 | rle_switch    | -2.27%    |
 | freq_varint   | +24.03%   |
+| arithmetic	| -16.02%   |
 
 ## Testing a fixed probability of 50% ones (50% zeros):
 | Coder         | Change    |
@@ -106,6 +113,7 @@ The last 1/8 of the plot shows the appended sign bits.
 | rle_zeros     | +15.45%   |
 | rle_switch    | +15.45%   |
 | freq_varint   | +82.69%   |
+| arithmetic	| +2.59%    |
 
 Simply copying the data, also known as `do nothing` works best if we are dealing with a uniform distribution where all symbols have the same probability of occuring. `rle_byte` also shows the property of resisting the urge to inflate the encoding.
 
@@ -117,6 +125,7 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | rle_zeros     | -9.30%    |
 | rle_switch    | -2.02%    |
 | freq_varint   | +24.68%   |
+| arithmetic	| -15.78%   |
 
 ## Testing a fixed probability of 10% ones (90% zeros):
 ![./fixed g 1234 0.1 | ./sma 10](fixed.png)
@@ -127,6 +136,7 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | rle_zeros     | -45.47%   |
 | rle_switch    | -39.72%   |
 | freq_varint   | -37.06%   |
+| arithmetic	| -47.73%   |
 
 ## Testing a fixed probability of 1% ones (99% zeros):
 | Coder         | Change    |
@@ -136,6 +146,7 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | rle_zeros     | -90.21%   |
 | rle_switch    | -89.08%   |
 | freq_varint   | -82.04%   |
+| arithmetic	| -89.32%   |
 
 ## Testing a fixed probability of 0% ones (100% zeros):
 | Coder         | Change    |
@@ -145,6 +156,7 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | rle_zeros     | -99.51%   |
 | rle_switch    | -99.51%   |
 | freq_varint   | -87.14%   |
+| arithmetic	| -95.06%   |
 
 ## Testing a sinusoidal probability with 10 periods:
 ![./sine g 1234 10 | ./sma 10](sine.png)
@@ -155,6 +167,7 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | rle_zeros     | -13.27%   |
 | rle_switch    | -33.41%   |
 | freq_varint   | +7.93%    |
+| arithmetic	| -41.59%   |
 
 The bitstream coming from a [bit plane](https://en.wikipedia.org/wiki/Bit_plane) looks a bit more interesting than this sinusoidal probability but it is good enough to show the strength of `rle_switch` here.
 
