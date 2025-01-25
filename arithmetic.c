@@ -78,13 +78,13 @@ int getabit() {
 }
 
 int decode(int freq) {
-	static int value, lower, upper = max_value;
-	if (freq < 0) {
+	static int init, value, lower, upper = max_value;
+	if (!init) {
+		init = 1;
 		for (int i = 0; i < code_bits; ++i) {
 			value <<= 1;
 			value |= getabit();
 		}
-		return 0;
 	}
 	int range = upper - lower + 1;
 	int point = range * freq;
@@ -140,12 +140,7 @@ int putac(int bit) {
 }
 
 int getac() {
-	static int init, freq = 16;
-	if (!init) {
-		init = 1;
-		if (decode(-1))
-			return -1;
-	}
+	static int freq = 16;
 	int bit = decode(freq);
 	if (bit < 0)
 		return -1;
