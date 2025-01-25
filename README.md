@@ -175,3 +175,6 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 
 The bitstream coming from a [bit plane](https://en.wikipedia.org/wiki/Bit_plane) looks a bit more interesting than this sinusoidal probability but it is good enough to show the strength of `rle_switch` here. `arithmetic` is doing better still.
 
+## References
+* Arithmetic Coding for Data Compression  
+Ian H. Witten, Radford M. Neal, and John G. Cleary - 1987
