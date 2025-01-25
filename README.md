@@ -178,3 +178,6 @@ The bitstream coming from a [bit plane](https://en.wikipedia.org/wiki/Bit_plane)
 ## References
 * Arithmetic Coding for Data Compression  
 Ian H. Witten, Radford M. Neal, and John G. Cleary - 1987
+
+## YouTube
+* [Data Compression (Summer 2020) -Lecture 15- Arithmetic Coding II (Infinite Precision in Finite Bits)](https://www.youtube.com/watch?v=WT57qXMpKjQ)
