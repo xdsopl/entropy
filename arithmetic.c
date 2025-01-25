@@ -9,12 +9,12 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
-const int code_bits = 16;
-const int top_value = (1 << code_bits) - 1;
-const int quarter = top_value / 4 + 1;
-const int half = 2 * quarter;
-const int third = 3 * quarter;
 const int factor = 32;
+const int code_bits = 16;
+const int max_value = (1 << code_bits) - 1;
+const int first_half = 1 << (code_bits - 1);
+const int first_quarter = 1 << (code_bits - 2);
+const int last_quarter = first_quarter | first_half;
 
 int putbits(int bit, int follow) {
 	if (bit < 0 || follow < 0)
@@ -28,34 +28,35 @@ int putbits(int bit, int follow) {
 }
 
 int encode(int bit, int freq) {
-	static int follow, low, high = top_value;
+	static int follow, lower, upper = max_value;
 	if (bit < 0)
-		return follow = putbits(low >= quarter, follow + 1);
-	int range = high - low + 1;
+		return follow = putbits(lower >= first_quarter, follow + 1);
+	int range = upper - lower + 1;
 	int point = range * freq;
 	int offset = point / factor;
 	if (bit)
-		low += offset;
+		lower += offset;
 	else
-		high = low + offset - 1;
+		upper = lower + offset - 1;
 	while (1) {
-		if (high < half) {
+		if (upper < first_half) {
 			if ((follow = putbits(0, follow)))
 				return -1;
-		} else if (low >= half) {
+		} else if (lower >= first_half) {
 			if ((follow = putbits(1, follow)))
 				return -1;
-			low -= half;
-			high -= half;
-		} else if (low >= quarter && high < third) {
+			lower -= first_half;
+			upper -= first_half;
+		} else if (lower >= first_quarter && upper < last_quarter) {
 			++follow;
-			low -= quarter;
-			high -= quarter;
+			lower -= first_quarter;
+			upper -= first_quarter;
 		} else {
 			break;
 		}
-		low *= 2;
-		high = 2 * high + 1;
+		lower <<= 1;
+		upper <<= 1;
+		upper |= 1;
 	}
 	return 0;
 }
@@ -77,7 +78,7 @@ int getabit() {
 }
 
 int decode(int freq) {
-	static int value, low, high = top_value;
+	static int value, lower, upper = max_value;
 	if (freq < 0) {
 		for (int i = 0; i < code_bits; ++i) {
 			value <<= 1;
@@ -85,30 +86,31 @@ int decode(int freq) {
 		}
 		return 0;
 	}
-	int range = high - low + 1;
+	int range = upper - lower + 1;
 	int point = range * freq;
-	int bit = (value - low + 1) * factor >= point + 1;
+	int bit = (value - lower + 1) * factor >= point + 1;
 	int offset = point / factor;
 	if (bit)
-		low += offset;
+		lower += offset;
 	else
-		high = low + offset - 1;
+		upper = lower + offset - 1;
 	while (1) {
-		if (high < half) {
+		if (upper < first_half) {
 			// nothing to see here
-		} else if (low >= half) {
-			value -= half;
-			low -= half;
-			high -= half;
-		} else if (low >= quarter && high < third) {
-			value -= quarter;
-			low -= quarter;
-			high -= quarter;
+		} else if (lower >= first_half) {
+			value -= first_half;
+			lower -= first_half;
+			upper -= first_half;
+		} else if (lower >= first_quarter && upper < last_quarter) {
+			value -= first_quarter;
+			lower -= first_quarter;
+			upper -= first_quarter;
 		} else {
 			break;
 		}
-		low *= 2;
-		high = 2 * high + 1;
+		lower <<= 1;
+		upper <<= 1;
+		upper |= 1;
 		value <<= 1;
 		value |= getabit();
 	}
@@ -116,12 +118,14 @@ int decode(int freq) {
 }
 
 int freq32(int bit) {
-	static int hist = 1431655765, sum = 16;
-	int old = (hist >> 31) & 1;
-	sum += !bit - old;
-	hist <<= 1;
-	hist |= !bit;
-	return sum < 1 ? 1 : sum > 31 ? 31 : sum;
+	static int past = 0x55555555, freq = 16;
+	if (!bit)
+		++freq;
+	if (past & (1 << 31))
+		--freq;
+	past <<= 1;
+	past |= !bit;
+	return freq < 1 ? 1 : freq > 31 ? 31 : freq;
 }
 
 int putac(int bit) {
