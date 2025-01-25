@@ -112,7 +112,10 @@ int decode(int freq) {
 		upper <<= 1;
 		upper |= 1;
 		value <<= 1;
-		value |= getabit();
+		int ret = getabit();
+		if (ret < 0)
+			return -1;
+		value |= ret;
 	}
 	return bit;
 }
