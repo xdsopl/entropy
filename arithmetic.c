@@ -9,7 +9,7 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
-const int factor = 32;
+const int factor = 32; // 2 .. 32, see update_freq()
 const int code_bits = 16;
 const int max_value = (1 << code_bits) - 1;
 const int first_half = 1 << (code_bits - 1);
@@ -120,31 +120,31 @@ int decode(int freq) {
 	return bit;
 }
 
-int freq32(int bit) {
-	static int past = 0x55555555, freq = 16;
+int update_freq(int bit) {
+	static int past = 0x55555555, freq = factor / 2;
 	if (!bit)
 		++freq;
-	if (past & (1 << 31))
+	if (past & (1 << (factor - 1)))
 		--freq;
 	past <<= 1;
 	past |= !bit;
-	return freq < 1 ? 1 : freq > 31 ? 31 : freq;
+	return freq < 1 ? 1 : freq > factor - 1 ? factor - 1 : freq;
 }
 
 int putac(int bit) {
-	static int freq = 16;
+	static int freq = factor / 2;
 	if (encode(bit, freq))
 		return -1;
-	freq = freq32(bit);
+	freq = update_freq(bit);
 	return 0;
 }
 
 int getac() {
-	static int freq = 16;
+	static int freq = factor / 2;
 	int bit = decode(freq);
 	if (bit < 0)
 		return -1;
-	freq = freq32(bit);
+	freq = update_freq(bit);
 	return bit;
 }
 
