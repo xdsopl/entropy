@@ -9,49 +9,41 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
-int putrle(int byte) {
-	static int prev = -1, count = -1;
-	if (byte < 0) {
-		if (count < 0)
-			return 0;
-		else
-			return putbyte(count);
-	}
-	if (byte == 0 || byte == 255) {
-		if (prev == byte) {
-			if (count < 255) {
-				++count;
-			} else {
-				if (putbyte(count))
-					return -1;
-				if (putbyte(byte))
-					return -1;
-				count = 0;
-			}
-		} else if (count < 0) {
-			if (putbyte(byte))
-				return -1;
-			count = 0;
-			prev = byte;
+void encode(int bytes) {
+	if (!bytes--)
+		return;
+	int prev = getbyte(), count = 0;
+	while (bytes--) {
+		int byte = getbyte();
+		if (prev == byte && count < 255) {
+			++count;
 		} else {
-			if (putbyte(count))
-				return -1;
-			if (putbyte(byte))
-				return -1;
+			putbyte(prev);
+			if (prev == 0 || prev == 255)
+				putbyte(count);
+			else
+				while (count--)
+					putbyte(prev);
 			count = 0;
-			prev = byte;
 		}
-	} else {
-		if (count >= 0) {
-			if (putbyte(count))
-				return -1;
-			count = -1;
-			prev = -1;
-		}
-		if (putbyte(byte))
-			return -1;
+		prev = byte;
 	}
-	return 0;
+	putbyte(prev);
+	if (prev == 0 || prev == 255)
+		putbyte(count);
+	else
+		while (count--)
+			putbyte(prev);
+}
+
+void decode(int bytes) {
+	while (bytes--) {
+		int byte = getbyte();
+		putbyte(byte);
+		if (byte == 0 || byte == 255)
+			for (int i = getbyte(); i; --i, --bytes)
+				putbyte(byte);
+	}
 }
 
 int main(int argc, char **argv) {
@@ -64,19 +56,10 @@ int main(int argc, char **argv) {
 	if (bytes <= 0)
 		return 1;
 	putleb128(bytes);
-	if (enc) {
-		while (bytes--)
-			putrle(getbyte());
-		putrle(-1); // flush
-	} else {
-		while (bytes--) {
-			int byte = getbyte();
-			putbyte(byte);
-			if (byte == 0 || byte == 255)
-				for (int i = getbyte(); i; --i, --bytes)
-					putbyte(byte);
-		}
-	}
+	if (enc)
+		encode(bytes);
+	else
+		decode(bytes);
 	double change = 100.0 * (wrote_bytes - read_bytes) / read_bytes;
 	fprintf(stderr, "%s: %s %d to %d bytes %+.2f%%\n", argv[0], enc ? "encoded" : "decoded", read_bytes, wrote_bytes, change);
 	return 0;
