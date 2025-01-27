@@ -88,7 +88,7 @@ int decode(int freq) {
 	}
 	int range = upper - lower + 1;
 	int point = range * freq;
-	int bit = (value - lower + 1) * factor >= point + 1;
+	int bit = point < (value - lower + 1) * factor;
 	int offset = point / factor;
 	if (bit)
 		lower += offset;
