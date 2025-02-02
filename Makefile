@@ -2,6 +2,7 @@ CFLAGS = -std=c99 -W -Wall -Ofast
 # CFLAGS += -g -fsanitize=address
 LDFLAGS = -lm
 STREAMS = fixed sine bit_plane fax_machine
+TRANSFORMS = xor
 CODERS = copy rle_byte rle_zeros rle_switch freq_varint arithmetic
 
 test: $(STREAMS) $(CODERS)
@@ -35,5 +36,5 @@ info: $(STREAMS) $(CODERS)
 	$(foreach coder,$(CODERS),./fax_machine g paper.pbm 2> /dev/null | ./$(coder) e > /dev/null;)
 
 clean:
-	rm -f sma $(STREAMS) $(CODERS)
+	rm -f sma $(STREAMS) $(TRANSFORMS) $(CODERS)
 
