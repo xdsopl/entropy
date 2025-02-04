@@ -24,8 +24,8 @@ int sma(int val, int len) {
 	return sum;
 }
 
-static int read_bytes;
-static int wrote_bytes;
+static int bytes_read;
+static int bytes_written;
 
 int getbyte() {
 	int byte = getchar();
@@ -33,7 +33,7 @@ int getbyte() {
 		fprintf(stderr, "reached end of stream\n");
 		return -1;
 	}
-	++read_bytes;
+	++bytes_read;
 	return byte;
 }
 
@@ -42,7 +42,7 @@ int putbyte(int byte) {
 		fprintf(stderr, "could not write to stream\n");
 		return -1;
 	}
-	++wrote_bytes;
+	++bytes_written;
 	return 0;
 }
 

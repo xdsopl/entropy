@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 				return 1;
 		}
 	}
-	fprintf(stderr, "%s: %s %d bytes with probability %f\n", argv[0], gen ? "generated" : "verified", gen ? wrote_bytes : read_bytes, prob);
+	fprintf(stderr, "%s: %s %d bytes with probability %f\n", argv[0], gen ? "generated" : "verified", gen ? bytes_written : bytes_read, prob);
 	return 0;
 }
 

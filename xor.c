@@ -29,8 +29,8 @@ int main(int argc, char **argv) {
 		for (int bits = 8 * bytes, prev = 0; bits; --bits)
 			putbit(prev ^= getbit());
 	}
-	double change = 100.0 * (wrote_bytes - read_bytes) / read_bytes;
-	fprintf(stderr, "%s: %s transformed %d to %d bytes %+.2f%%\n", argv[0], fwd ? "forward" : "backward", read_bytes, wrote_bytes, change);
+	double change = 100.0 * (bytes_written - bytes_read) / bytes_read;
+	fprintf(stderr, "%s: %s transformed %d to %d bytes %+.2f%%\n", argv[0], fwd ? "forward" : "backward", bytes_read, bytes_written, change);
 	return 0;
 }
 

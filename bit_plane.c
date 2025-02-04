@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
 	}
 	fclose(pgm);
 	free(buf);
-	fprintf(stderr, "%s: %s %d bytes\n", argv[0], gen ? "generated" : "verified", gen ? wrote_bytes : read_bytes);
+	fprintf(stderr, "%s: %s %d bytes\n", argv[0], gen ? "generated" : "verified", gen ? bytes_written : bytes_read);
 	return 0;
 }
 

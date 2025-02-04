@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 	double factor = 1.0 / (8 * len);
 	for (int bytes = getleb128(); bytes; --bytes)
 		printf("%f\n", factor * sma(popcnt(getbyte()), len));
-	fprintf(stderr, "%s: read %d bytes\n", argv[0], read_bytes);
+	fprintf(stderr, "%s: read %d bytes\n", argv[0], bytes_read);
 	return 0;
 }
 

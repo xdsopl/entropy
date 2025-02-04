@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 	putleb128(bytes);
 	while (bytes--)
 		putbyte(getbyte());
-	fprintf(stderr, "%s: read %d and wrote %d bytes\n", argv[0], read_bytes, wrote_bytes);
+	fprintf(stderr, "%s: read %d and wrote %d bytes\n", argv[0], bytes_read, bytes_written);
 	return 0;
 }
 
