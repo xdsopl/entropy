@@ -180,6 +180,8 @@ The bitstream coming from a [bit plane](https://en.wikipedia.org/wiki/Bit_plane)
 Solomon W. Golomb - 1966
 * Arithmetic Coding for Data Compression  
 Ian H. Witten, Radford M. Neal, and John G. Cleary - 1987
+* A Block-sorting Lossless Data Compression Algorithm  
+M. Burrows and D.J. Wheeler - 1994
 
 ## YouTube
 * [Data Compression (Summer 2020) -Lecture 15- Arithmetic Coding II (Infinite Precision in Finite Bits)](https://www.youtube.com/watch?v=WT57qXMpKjQ)
