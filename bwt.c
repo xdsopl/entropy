@@ -16,16 +16,38 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 static int bwt_length;
 static const unsigned char *bwt_input;
 
-int bwt_compare(const void *a, const void *b) {
+// only works for bwt_length % 8 == 0
+static inline int bwt_byte(int p) {
+	int i = p & 7, j = p >> 3;
+	int l = bwt_input[j];
+	int h = bwt_input[(j + 1) % (bwt_length >> 3)];
+	return ((l >> i) | (h << (8 - i))) & 255;
+}
+
+static int bwt_compare(const void *a, const void *b) {
 	int x = *(const int *)a;
 	int y = *(const int *)b;
-	for (int i = 0; i < bwt_length; ++i) {
-		int A = (x + i) % bwt_length;
-		int B = (y + i) % bwt_length;
-		int l = (bwt_input[A / 8] >> (A % 8)) & 1;
-		int r = (bwt_input[B / 8] >> (B % 8)) & 1;
+	int bits = bwt_length;
+	while (bits >= 8) {
+		bits -= 8;
+		int L = bwt_byte(x);
+		int R = bwt_byte(y);
+		if (L != R) {
+			int i = __builtin_ctz(L ^ R);
+			int l = (L >> i) & 1;
+			int r = (R >> i) & 1;
+			return l - r;
+		}
+		x = (x + 8) % bwt_length;
+		y = (y + 8) % bwt_length;
+	}
+	while (bits--) {
+		int l = (bwt_input[x / 8] >> (x % 8)) & 1;
+		int r = (bwt_input[y / 8] >> (y % 8)) & 1;
 		if (l != r)
 			return l - r;
+		x = (x + 1) % bwt_length;
+		y = (y + 1) % bwt_length;
 	}
 	return 0;
 }
