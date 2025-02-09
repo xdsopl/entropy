@@ -9,7 +9,7 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
-#define BLOCK_POWER 8
+#define BLOCK_POWER 10
 #define BLOCK_SIZE (1 << BLOCK_POWER)
 
 static int bwt_length;
