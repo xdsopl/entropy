@@ -9,7 +9,6 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 #include <stdint.h>
 #include "common.h"
 
-#define ALPHABET_SIZE 2
 #define BLOCK_POWER 8
 #define BLOCK_SIZE (1 << BLOCK_POWER)
 
@@ -79,20 +78,14 @@ int bwt(unsigned char *output, const unsigned char *input, int length) {
 }
 
 void ibwt(unsigned char *output, const unsigned char *input, int length, int row) {
-	static int count[ALPHABET_SIZE];
-	for (int i = 0; i < ALPHABET_SIZE; ++i)
-		count[i] = 0;
 	static int pref[BLOCK_SIZE];
+	int count0 = 0, count1 = 0;
 	for (int i = 0; i < length; ++i)
-		pref[i] = count[input[i]]++;
-	for (int i = 0, sum = 0; i < ALPHABET_SIZE; ++i) {
-		int tmp = count[i] + sum;
-		count[i] = sum;
-		sum = tmp;
-	}
+		pref[i] = input[i] ? count1++ : count0++;
+	int offset0 = 0, offset1 = count0;
 	for (int i = length-1; i >= 0; --i) {
 		output[i] = input[row];
-		row = pref[row] + count[input[row]];
+		row = pref[row] + (input[row] ? offset1 : count0);
 	}
 }
 
