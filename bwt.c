@@ -20,8 +20,10 @@ int bwt_compare(const void *a, const void *b) {
 	int x = *(const int *)a;
 	int y = *(const int *)b;
 	for (int i = 0; i < bwt_length; ++i) {
-		int l = bwt_input[(x + i) % bwt_length];
-		int r = bwt_input[(y + i) % bwt_length];
+		int A = (x + i) % bwt_length;
+		int B = (y + i) % bwt_length;
+		int l = (bwt_input[A / 8] >> (A % 8)) & 1;
+		int r = (bwt_input[B / 8] >> (B % 8)) & 1;
 		if (l != r)
 			return l - r;
 	}
@@ -45,7 +47,11 @@ int bwt(unsigned char *output, const unsigned char *input, int length) {
 			index = length;
 			row = i;
 		}
-		output[i] = input[index - 1];
+		int j = index - 1;
+		int bit = (input[j / 8] >> (j % 8)) & 1;
+		if (i % 8 == 0)
+			output[i / 8] = 0;
+		output[i / 8] |= bit << (i % 8);
 	}
 	return row;
 }
@@ -74,7 +80,6 @@ int main(int argc, char **argv) {
 	if (*argv[1] != 'f' && *argv[1] != 'b')
 		return 1;
 	int fwd = *argv[1] == 'f';
-	static unsigned char input[BLOCK_SIZE], output[BLOCK_SIZE];
 	if (fwd) {
 		int bytes = getleb128();
 		if (bytes <= 0)
@@ -83,18 +88,20 @@ int main(int argc, char **argv) {
 		int extra = (blocks * BLOCK_POWER + 7) / 8 + 3;
 		putleb128(bytes + extra);
 		write_bits(extra, 24);
-		for (int bits = 8 * bytes, length = 0; bits; --bits) {
-			input[length++] = getbit();
-			if (length >= BLOCK_SIZE || bits == 1) {
-				int row = bwt(output, input, length);
+		static unsigned char input[BLOCK_SIZE/8], output[BLOCK_SIZE/8];
+		for (int length = 0; bytes; --bytes) {
+			input[length++] = getbyte();
+			if (length >= BLOCK_SIZE/8 || bytes == 1) {
+				int row = bwt(output, input, length*8);
 				for (int i = 0; i < length; ++i)
-					putbit(output[i]);
+					write_bits(output[i], 8);
 				write_bits(row, BLOCK_POWER);
 				length = 0;
 			}
 		}
 		flush_bits();
 	} else {
+		static unsigned char input[BLOCK_SIZE], output[BLOCK_SIZE];
 		int bytes = getleb128();
 		if (bytes <= 0)
 			return 1;
