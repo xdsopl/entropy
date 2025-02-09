@@ -81,11 +81,14 @@ void ibwt(unsigned char *output, const unsigned char *input, int length, int row
 	static int pref[BLOCK_SIZE];
 	int count0 = 0, count1 = 0;
 	for (int i = 0; i < length; ++i)
-		pref[i] = input[i] ? count1++ : count0++;
+		pref[i] = ((input[i / 8] >> (i % 8)) & 1) ? count1++ : count0++;
 	int offset0 = 0, offset1 = count0;
 	for (int i = length-1; i >= 0; --i) {
-		output[i] = input[row];
-		row = pref[row] + (input[row] ? offset1 : count0);
+		int bit = (input[row / 8] >> (row % 8)) & 1;
+		if (i % 8 == 7)
+			output[i / 8] = 0;
+		output[i / 8] |= bit << (i % 8);
+		row = pref[row] + (bit ? offset1 : offset0);
 	}
 }
 
@@ -95,6 +98,7 @@ int main(int argc, char **argv) {
 	if (*argv[1] != 'f' && *argv[1] != 'b')
 		return 1;
 	int fwd = *argv[1] == 'f';
+	static unsigned char input[BLOCK_SIZE/8], output[BLOCK_SIZE/8];
 	if (fwd) {
 		int bytes = getleb128();
 		if (bytes <= 0)
@@ -103,7 +107,6 @@ int main(int argc, char **argv) {
 		int extra = (blocks * BLOCK_POWER + 7) / 8 + 3;
 		putleb128(bytes + extra);
 		write_bits(extra, 24);
-		static unsigned char input[BLOCK_SIZE/8], output[BLOCK_SIZE/8];
 		for (int length = 0; bytes; --bytes) {
 			input[length++] = getbyte();
 			if (length >= BLOCK_SIZE/8 || bytes == 1) {
@@ -116,7 +119,6 @@ int main(int argc, char **argv) {
 		}
 		flush_bits();
 	} else {
-		static unsigned char input[BLOCK_SIZE], output[BLOCK_SIZE];
 		int bytes = getleb128();
 		if (bytes <= 0)
 			return 1;
@@ -125,15 +127,19 @@ int main(int argc, char **argv) {
 			return 1;
 		bytes -= extra;
 		putleb128(bytes);
-		for (int bits = 8 * bytes, length = 0; bits; --bits) {
-			input[length++] = getbit();
-			if (length >= BLOCK_SIZE || bits == 1) {
+		for (int length = 0; bytes; --bytes) {
+			int byte;
+			if (read_bits(&byte, 8))
+				return 1;
+			input[length++] = byte;
+			if (length >= BLOCK_SIZE/8 || bytes == 1) {
 				int row;
 				if (read_bits(&row, BLOCK_POWER))
 					return 1;
-				ibwt(output, input, length, row);
+				ibwt(output, input, length*8, row);
 				for (int i = 0; i < length; ++i)
-					putbit(output[i]);
+					if (putbyte(output[i]))
+						return 1;
 				length = 0;
 			}
 		}
