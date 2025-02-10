@@ -59,8 +59,12 @@ void bwt_rot(int *output, const unsigned char *input, int length) {
 	qsort(output, length, sizeof(int), bwt_compare);
 }
 
-static inline int bwt_bit(const unsigned char *array, int index) {
+static inline int bwt_get_bit(const unsigned char *array, int index) {
 	return (array[index / 8] >> (index % 8)) & 1;
+}
+
+static inline void bwt_set_bit(unsigned char *array, int index, int value) {
+	array[index / 8] = (array[index / 8] & ~(1 << (index % 8))) | (!!value << (index % 8));
 }
 
 int bwt(unsigned char *output, const unsigned char *input, int length) {
@@ -72,9 +76,7 @@ int bwt(unsigned char *output, const unsigned char *input, int length) {
 			index = length;
 			row = i;
 		}
-		if (i % 8 == 0)
-			output[i / 8] = 0;
-		output[i / 8] |= bwt_bit(input, index - 1) << (i % 8);
+		bwt_set_bit(output, i, bwt_get_bit(input, index - 1));
 	}
 	return row;
 }
@@ -83,14 +85,12 @@ void ibwt(unsigned char *output, const unsigned char *input, int length, int row
 	static int pref[BLOCK_SIZE];
 	int count0 = 0, count1 = 0;
 	for (int i = 0; i < length; ++i)
-		pref[i] = bwt_bit(input, i) ? count1++ : count0++;
+		pref[i] = bwt_get_bit(input, i) ? count1++ : count0++;
 	int offset0 = 0, offset1 = count0;
 	for (int i = length-1; i >= 0; --i) {
-		int bit = bwt_bit(input, row);
-		if (i % 8 == 7)
-			output[i / 8] = 0;
-		output[i / 8] |= bit << (i % 8);
-		row = pref[row] + (bit ? offset1 : offset0);
+		int value = bwt_get_bit(input, row);
+		bwt_set_bit(output, i, value);
+		row = pref[row] + (value ? offset1 : offset0);
 	}
 }
 
