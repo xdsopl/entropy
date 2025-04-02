@@ -11,36 +11,39 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 
 int putval(int val) {
 	static int order;
-	while (val >= 1 << order) {
+	int cnt = order;
+	while (val >= 1 << cnt) {
 		if (putbit(0))
 			return -1;
-		val -= 1 << order;
-		order += 1;
+		val -= 1 << cnt;
+		cnt += 1;
 	}
 	if (putbit(1))
 		return -1;
-	if (write_bits(val, order))
+	if (write_bits(val, cnt))
 		return -1;
-	order -= 1;
-	if (order < 0)
-		order = 0;
+	cnt -= 1;
+	if (cnt < 0)
+		cnt = 0;
+	order = (order + cnt) / 2;
 	return 0;
 }
 
 int getval() {
 	static int order;
-	int val, sum = 0, ret;
+	int cnt = order, sum = 0, ret, val;
 	while ((ret = getbit()) == 0) {
-		sum += 1 << order;
-		order += 1;
+		sum += 1 << cnt;
+		cnt += 1;
 	}
 	if (ret < 0)
 		return -1;
-	if (read_bits(&val, order))
+	if (read_bits(&val, cnt))
 		return -1;
-	order -= 1;
-	if (order < 0)
-		order = 0;
+	cnt -= 1;
+	if (cnt < 0)
+		cnt = 0;
+	order = (order + cnt) / 2;
 	return val + sum;
 }
 

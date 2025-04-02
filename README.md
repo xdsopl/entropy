@@ -33,8 +33,8 @@ Dithering makes it possible to bring grayscale pictures to paper using various p
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | +0.06%    | +2.63%    | -7.61%    |
-| rle_zeros     | +23.94%   | +1.17%    | +4.99%    |
-| rle_switch    | -4.90%    | -12.34%   | -22.97%   |
+| rle_zeros     | +24.26%   | -3.75%    | +4.12%    |
+| rle_switch    | -5.77%    | -10.63%   | -24.07%   |
 | freq_varint   | -0.20%    | +2.65%    | +4.17%    |
 | arithmetic    | -13.32%   | -8.30%    | -27.54%   |
 
@@ -52,8 +52,8 @@ Binary images of text on the other hand are easier to compress:
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | -87.30%   | -87.28%   | -87.36%   |
-| rle_zeros     | -89.69%   | -91.39%   | -91.16%   |
-| rle_switch    | -92.20%   | -90.51%   | -91.75%   |
+| rle_zeros     | -91.27%   | -91.66%   | -91.61%   |
+| rle_switch    | -92.27%   | -90.85%   | -92.08%   |
 | freq_varint   | -81.23%   | -80.93%   | -80.42%   |
 | arithmetic    | -86.53%   | -88.63%   | -88.18%   |
 
@@ -72,8 +72,8 @@ The last 1/8 of the plot shows the appended sign bits.
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | -48.36%   | -48.41%   | -45.95%   |
-| rle_zeros     | -55.83%   | -50.54%   | -55.04%   |
-| rle_switch    | -54.14%   | -51.01%   | -52.71%   |
+| rle_zeros     | -56.74%   | -53.30%   | -55.51%   |
+| rle_switch    | -54.87%   | -52.03%   | -53.13%   |
 | freq_varint   | -37.92%   | -32.35%   | -36.29%   |
 | arithmetic    | -57.03%   | -51.96%   | -56.72%   |
 
@@ -84,8 +84,8 @@ For bit planes, none of the transformations `copy`, `xor`, or `bwt` improve perf
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | -99.03%   | -98.95%   | -95.93%   |
-| rle_zeros     | +0.97%    | -99.51%   | -0.16%    |
-| rle_switch    | -99.51%   | -99.51%   | -97.76%   |
+| rle_zeros     | +0.08%    | -99.51%   | -0.40%    |
+| rle_switch    | -99.51%   | -99.51%   | -97.60%   |
 | freq_varint   | -87.14%   | -87.06%   | -85.78%   |
 | arithmetic    | -95.06%   | -95.06%   | -90.34    |
 
@@ -96,8 +96,8 @@ This is an example where `xor` helps `rle_zeros` to perform better, while hurtin
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | -78.07%   | -77.27%   | -78.27%   |
-| rle_zeros     | +0.97%    | -85.36%   | +0.96%    |
-| rle_switch    | -90.61%   | -88.67%   | -88.34%   |
+| rle_zeros     | +0.97%    | -86.00%   | +0.88%    |
+| rle_switch    | -90.37%   | -88.51%   | -88.26%   |
 | freq_varint   | -82.61%   | -81.72%   | -79.63%   |
 | arithmetic    | -90.21%   | -84.79%   | -87.22%   |
 
@@ -108,8 +108,8 @@ Same here, `xor` helps `rle_zeros` but hurts others.
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | +7.77%    | +7.04%    | +6.31%    |
-| rle_zeros     | +8.25%    | -26.38%   | +8.15%    |
-| rle_switch    | -41.34%   | -29.77%   | -41.29%   |
+| rle_zeros     | +8.17%    | -33.25%   | +7.99%    |
+| rle_switch    | -40.78%   | -28.96%   | -40.81%   |
 | freq_varint   | -38.92%   | -28.56%   | -36.58%   |
 | arithmetic    | -48.95%   | -27.83%   | -48.24%   |
 
@@ -118,8 +118,8 @@ Same here, `xor` helps `rle_zeros` but hurts others.
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | +6.96%    | +5.50%    | +9.03%    |
-| rle_zeros     | +15.53%   | +5.42%    | +15.73%   |
-| rle_switch    | -2.27%    | +7.28%    | -3.04%    |
+| rle_zeros     | +14.81%   | -0.65%    | +14.94%   |
+| rle_switch    | -2.43%    | +6.39%    | -3.51%    |
 | freq_varint   | +24.03%   | +43.53%   | +25.64%   |
 | arithmetic    | -16.02%   | -1.86%    | -15.34%   |
 
@@ -128,8 +128,8 @@ Same here, `xor` helps `rle_zeros` but hurts others.
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | +0.65%    | +0.49%    | +0.56%    |
-| rle_zeros     | +15.45%   | +15.45%   | +15.50%   |
-| rle_switch    | +15.45%   | +16.02%   | +15.50%   |
+| rle_zeros     | +13.35%   | +13.59%   | +13.42%   |
+| rle_switch    | +13.59%   | +13.67%   | +13.50%   |
 | freq_varint   | +82.69%   | +83.09%   | +81.31%   |
 | arithmetic    | +2.59%    | +2.35%    | +2.32%    |
 
@@ -140,8 +140,8 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | +7.12%    | +5.66%    | +7.27%    |
-| rle_zeros     | -9.30%    | +4.77%    | -9.19%    |
-| rle_switch    | -2.02%    | +7.52%    | -3.12%    |
+| rle_zeros     | -9.79%    | -0.65%    | -10.14%   |
+| rle_switch    | -2.51%    | +5.99%    | -3.75%    |
 | freq_varint   | +24.68%   | +43.28%   | +25.32%   |
 | arithmetic    | -15.78%   | -1.78%    | -15.50%   |
 
@@ -151,8 +151,8 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | +10.36%   | +9.39%    | +6.71%    |
-| rle_zeros     | -45.47%   | -23.46%   | -45.21%   |
-| rle_switch    | -39.72%   | -26.78%   | -39.30%   |
+| rle_zeros     | -44.17%   | -30.42%   | -44.01%   |
+| rle_switch    | -38.35%   | -25.81%   | -38.10%   |
 | freq_varint   | -37.06%   | -27.27%   | -35.62%   |
 | arithmetic    | -47.73%   | -26.21%   | -47.20%   |
 
@@ -161,8 +161,8 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | -74.43%   | -73.79%   | -73.72%   |
-| rle_zeros     | -90.21%   | -82.93%   | -87.70%   |
-| rle_switch    | -89.08%   | -86.81%   | -87.14%   |
+| rle_zeros     | -89.89%   | -83.82%   | -87.62%   |
+| rle_switch    | -88.83%   | -86.57%   | -86.90%   |
 | freq_varint   | -82.04%   | -81.31%   | -79.95%   |
 | arithmetic    | -89.32%   | -82.69%   | -86.82%   |
 
@@ -182,8 +182,8 @@ Simply copying the data, also known as `do nothing` works best if we are dealing
 | ------------- | --------- | --------- | --------- |
 | copy          | 0%        | 0%        | 0%        |
 | rle_byte      | -15.78%   | -16.18%   | -7.59%    |
-| rle_zeros     | -13.27%   | -25.24%   | -8.15%    |
-| rle_switch    | -33.41%   | -26.05%   | -23.08%   |
+| rle_zeros     | -13.43%   | -29.61%   | -9.03%    |
+| rle_switch    | -33.98%   | -26.46%   | -24.36%   |
 | freq_varint   | +7.93%    | +1.78%    | +20.29%   |
 | arithmetic    | -41.59%   | -29.53%   | -28.83%   |
 

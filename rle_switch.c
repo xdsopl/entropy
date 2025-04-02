@@ -11,36 +11,39 @@ Copyright 2025 Ahmet Inan <xdsopl@gmail.com>
 
 int putval(int val, int ctx) {
 	static int order[2];
-	while (val >= 1 << order[ctx]) {
+	int cnt = order[ctx];
+	while (val >= 1 << cnt) {
 		if (putbit(0))
 			return -1;
-		val -= 1 << order[ctx];
-		order[ctx] += 1;
+		val -= 1 << cnt;
+		cnt += 1;
 	}
 	if (putbit(1))
 		return -1;
-	if (write_bits(val, order[ctx]))
+	if (write_bits(val, cnt))
 		return -1;
-	order[ctx] -= 1;
-	if (order[ctx] < 0)
-		order[ctx] = 0;
+	cnt -= 1;
+	if (cnt < 0)
+		cnt = 0;
+	order[ctx] = (order[ctx] + cnt) / 2;
 	return 0;
 }
 
 int getval(int ctx) {
 	static int order[2];
-	int val, sum = 0, ret;
+	int cnt = order[ctx], sum = 0, ret, val;
 	while ((ret = getbit()) == 0) {
-		sum += 1 << order[ctx];
-		order[ctx] += 1;
+		sum += 1 << cnt;
+		cnt += 1;
 	}
 	if (ret < 0)
 		return -1;
-	if (read_bits(&val, order[ctx]))
+	if (read_bits(&val, cnt))
 		return -1;
-	order[ctx] -= 1;
-	if (order[ctx] < 0)
-		order[ctx] = 0;
+	cnt -= 1;
+	if (cnt < 0)
+		cnt = 0;
+	order[ctx] = (order[ctx] + cnt) / 2;
 	return val + sum;
 }
 
